@@ -8,9 +8,8 @@
 # module imports
 # ----------------------------------------------------------------------------
 from dataclasses import dataclass
-from operator import lt, gt, eq
+from operator import lt, gt
 from re import split as re_split
-from typing import Union
 
 # function definitions
 # ----------------------------------------------------------------------------
@@ -53,7 +52,7 @@ class Interval():
         return repr(f"Interval({spec})")
     
     # define a custom function for the equal to (==) comparator
-    # based on identical interval information on matchin coordinates
+    # based on identical interval information on matching coordinates
     def __eq__(self, other):
         comp = ((self.chrom == other.chrom) and
                 (self.chromStart == other.chromStart) and
