@@ -12,9 +12,9 @@ from operator import lt, gt, eq
 from re import split as re_split
 from typing import Union
 
-
 # function definitions
 # ----------------------------------------------------------------------------
+
 # function prep_chrom_compare() splits contig names that are a combo of
 # strings and digits to use as sorting keys in sort functions and similar 
 # processes. for example: 'chr1' -> ('chr', 1). this function can be 
@@ -24,9 +24,9 @@ def prep_chrom_comp(chrom: str):
         return int(substr) if substr.isdigit() else substr.lower()
     return [recode(sub) for sub in re_split('([0-9]+)',chrom)]
 
-
 # class definitions
 # ----------------------------------------------------------------------------
+
 # class Interval() - base class for all BED-type genome interval objects. 
 # * indexing of genomic intervals follow BED conventions. This means that
 #   chromosome scaffolds begin at base 0. the the end of the interval is 
@@ -92,31 +92,9 @@ class Interval():
     
     # define a custom function to determine whether the interval intersects
     # another interval. intervals on separate chromosomes do not intersect
-    def intersect(self,other):
+    def __intersect__(self,other):
         if self.chrom != other.chrom: return True
         else:
             return not (  # define intersection conditions
                 (other.chromEnd < self.chromStart) or 
                 (other.chromStart >= self.chromEnd)) 
-
-
-# class Bed6() - child class of Interval() which adds score and strand.
-# * complies with the BED6 standard found on the UCSC file format standards
-#   webpage: https://genome.ucsc.edu/FAQ/FAQformat.html#format1
-# 
-# * the class adds two attributes to the Interval base class:
-#    1. interval score (score); typically 1-1000 -required, missing denoted by '.'-
-#    2. feature strandness (strand) -required, missingness denoted by '.'-
-@dataclass
-class Bed6(Interval):
-    score: Union[int,str]
-    strand: str
-
-    # define a custom printout representation for the Bed6
-    def __repr__(self):
-        spec_int = f" {self.chrom} {self.chromStart} {self.chromEnd} {self.name}"
-        spec_bed = spec_int + f" {self.score} {self.strand} "
-        return repr(f"Bed6({spec_bed})")
-    
-
-
