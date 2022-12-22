@@ -35,27 +35,43 @@ def check_and_convert_nums(string):
 # class definitions
 # ----------------------------------------------------------------------------
 
-# TODO: Description for the GTF class and attributes!!
-
+# class Interval() - base class for all GTF-type gene-like objects. 
+# * indexing of genomic intervals follow GTF conventions. This means that
+#   chromosome scaffolds begin at base 1. (This differs from bed-syle so care
+#   must be taken when intersecting the two object types) the end of the interval
+#   is inclusive [chromStart, chromEnd], creating slightly different intersection
+#   rules than bed-style objects. 
+#
+# * The GTF class contains nine attributes: 
+#     1. chrom - chromosome of the feature
+#     2. source - The program that generated this feature
+#     3. feature - The name of the type of feature e.g. (exon, transcript, CDS, etc. )
+#     4. chromStart - chromosome start position [ 1-indexed, inclusive ]
+#     5. chromEnd - chromosome end position [ 1-indexed, inclusive ]
+#     6. score - A score between 0 and 1000, can be used for filtering or visual cues
+#     7. strand - strand options include "+", "-", or "." (for don't know/don't care)
+#     8. frame - for exons and similar, frame should be a number between 0-2
+#     9. attribute -  raw string representing attribute list. converted and stored in 
+#           attr_dict for convenience of use and filtering.
 @dataclass
 class GTF:
     chrom: str
-    source: str
-    feature: str
-    chromStart: int
-    chromEnd: int
-    score: int
-    strand: str
-    frame: Union[str,int]
-    attributes: str
+    source: str  # e.g. HAVANA, ncbi, etc
+    feature: str 
+    chromStart: int # 1-indexed, beware interfacing with BED objects
+    chromEnd: int # 1-indexed, inclusive, beware interfacing with BED objects
+    score: int  # 0-1000 
+    strand: str  # '+', '-', or '.'
+    frame: Union[str,int]  # 0-2 or '.'
+    attributes: str  # raw string repr of the attributes, converted below
     
     # define post_init routines to create attribute dictionary
     def __post_init__(self): # TODO
         self.attr_dict = {}
         pre_proc_attr = self.attributes.split("; ")
         for pair in pre_proc_attr:
-            k,v = [p.strip('"') for p in pair]
-            if k not in self.attr_dict:
+            k,v = [p.strip('"') for p in pair.strip(";").split()]
+            if k not in self.attr_dict.keys():
                 self.attr_dict[k] = [check_and_convert_nums(v)]
             else:
                 self.attr_dict[k].append(check_and_convert_nums(v))
