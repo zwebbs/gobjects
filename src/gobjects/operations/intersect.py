@@ -52,7 +52,7 @@ def intersect_GTFtoGTF(gobjA, gobjB, strand_aware=False):
 # argument and a GTF-like object as its second argument and returns the boolean 
 # result of the interval intersect. the function has a strand aware option but is
 # not checked internally for strand attrs:
-def intersect_BEDtoGTF(gobjA, gbobjB, strand_aware=False):
+def intersect_BEDtoGTF(gobjA, gobjB, strand_aware=False):
     if strand_aware and (gobjA.strand != gobjB.strand): return False
     else :
         return not (  # define NOT intersection conditions
