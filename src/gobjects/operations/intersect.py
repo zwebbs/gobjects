@@ -7,7 +7,6 @@
 # module imports
 # ----------------------------------------------------------------------------
 from ..core.intervals import Interval
-from ..core.bed import Bed6, Bed12
 from ..core.gtf import GTF
 
 # function definitions
@@ -44,7 +43,9 @@ def intersect_BEDtoBED(gobjA, gobjB, strand_aware=False):
 def intersect_GTFtoGTF(gobjA, gobjB, strand_aware=False):
     if strand_aware and (gobjA.strand != gobjB.strand): return False
     else :
-        return not (  # define NOT intersection conditions
+        if gobjA.chrom != gobjB.chrom: return True
+        else:
+            return not (  # define NOT intersection conditions
                 (gobjB.chromEnd < gobjA.chromStart) or 
                 (gobjB.chromStart > gobjA.chromEnd)) # gtfs are right inclusive
 
@@ -54,9 +55,11 @@ def intersect_GTFtoGTF(gobjA, gobjB, strand_aware=False):
 # not checked internally for strand attrs:
 def intersect_BEDtoGTF(gobjA, gobjB, strand_aware=False):
     if strand_aware and (gobjA.strand != gobjB.strand): return False
-    else :
-        return not (  # define NOT intersection conditions
-                (gobjB.chromEnd < gobjA.chromStart) or 
+    else:
+        if gobjA.chrom != gobjB.chrom: return True
+        else:
+            return not (  # define NOT intersection conditions
+                (gobjB.chromEnd < gobjA.chromStart) or
                 (gobjB.chromStart >= gobjA.chromEnd)) # take care of uneven boundary inclusion
 
 # define intersect() which takes two objects and returns the boolean result of 
@@ -68,16 +71,16 @@ def intersect(a_obj, b_obj, strand_aware=False):
         check_stranded(b_obj)
 
     # handle comparisons between different object types
-    if (type(a_obj) == Interval) and (type(b_obj) == Interval):
+    if (isinstance(a_obj,Interval)) and (isinstance(b_obj,Interval)):
         return intersect_BEDtoBED(a_obj, b_obj, strand_aware)
-    elif (type(a_obj) == GTF) and (type(b_obj) == GTF):
+    elif (isinstance(a_obj,GTF)) and (isinstance(b_obj,GTF)):
         return intersect_GTFtoGTF(a_obj, b_obj, strand_aware)
-    elif (type(a_obj) == Interval) and (type(b_obj) == GTF):
+    elif (isinstance(a_obj,Interval)) and (isinstance(b_obj,GTF)):
         return intersect_BEDtoGTF(a_obj, b_obj, strand_aware)
-    elif (type(a_obj) == Interval) and (type(b_obj) == GTF):
+    elif (isinstance(a_obj,GTF)) and (isinstance(b_obj, Interval)):
         return intersect_BEDtoGTF(b_obj, a_obj, strand_aware) # switch a and b for gtf to bed 
     else:
         raise TypeError(
-            f"Could not Infer the types for intersect objects "
-            "{a_obj} and/or {b_obj}"
+            "Could not Infer the types for intersect objects "
+            f"{a_obj} and/or {b_obj}"
         )
