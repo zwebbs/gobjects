@@ -21,8 +21,6 @@ from typing import Union
 # * the class adds two attributes to the Interval base class:
 #    1. interval score (score); typically 1-1000 -required, missing denoted by '.'-
 #    2. feature strandness (strand) -required, missingness denoted by '.'-
-# * the class also overwrites the intersect class to include an option for strand
-#    aware intersection.
 @dataclass
 class Bed6(Interval):
     score: Union[int,str]
@@ -36,16 +34,6 @@ class Bed6(Interval):
         )
         return repr(f"Bed6({spec_bed6})")
     
-    # define a modification of Interval.__intersect__ which provides 
-    # an option for strand-aware intersections
-    def __intersect__(self,other, strand_aware=False):
-        if strand_aware and (self.strand != other.strand): return False
-        else:  # regular intersect routine
-            if self.chrom != other.chrom: return True
-            else:
-                return not (  # define intersection conditions
-                    (other.chromEnd < self.chromStart) or 
-                    (other.chromStart >= self.chromEnd))
 
 # class Bed12() - child class of Bed6() which adds several more fields.
 # * complies with the BED12 standard found on the UCSC file format standards
