@@ -48,8 +48,8 @@ class Interval():
 
     # define a post-init method to coerce ints and floats properly
     def __post_init__(self):
-        chromStart = int(chromStart)
-        chromEnd = int(chromEnd)
+        self.chromStart = int(self.chromStart)
+        self.chromEnd = int(self.chromEnd)
 
     # define a custom printout representation for the Interval
     def __repr__(self):

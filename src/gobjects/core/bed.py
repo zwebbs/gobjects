@@ -28,9 +28,9 @@ class Bed6(Interval):
 
     # define a post-init method to coerce ints and floats properly
     def __post_init__(self):
-        chromStart = int(chromStart)
-        chromEnd = int(chromEnd)
-        score = float(score)
+        self.chromStart = int(self.chromStart)
+        self.chromEnd = int(self.chromEnd)
+        self.score = float(self.score)
 
     # define a custom printout representation for the Bed6
     def __repr__(self):

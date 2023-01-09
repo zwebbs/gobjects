@@ -67,9 +67,9 @@ class GTF:
     
     # define post_init routines to create attribute dictionary
     def __post_init__(self): # TODO
-        chromStart = int(chromStart)
-        chromEnd = int(chromEnd)
-        score = float(score)
+        self.chromStart = int(self.chromStart)
+        self.chromEnd = int(self.chromEnd)
+        self.score = float(self.score)
         self.attr_dict = {}
         pre_proc_attr = self.attributes.split("; ")
         for pair in pre_proc_attr:
