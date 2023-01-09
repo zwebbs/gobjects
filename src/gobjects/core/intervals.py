@@ -46,6 +46,11 @@ class Interval():
     chromEnd: int
     name: str
 
+    # define a post-init method to coerce ints and floats properly
+    def __post_init__(self):
+        chromStart = int(chromStart)
+        chromEnd = int(chromEnd)
+
     # define a custom printout representation for the Interval
     def __repr__(self):
         spec = f" {self.chrom} {self.chromStart} {self.chromEnd} {self.name} "

@@ -23,8 +23,14 @@ from typing import Union
 #    2. feature strandness (strand) -required, missingness denoted by '.'-
 @dataclass
 class Bed6(Interval):
-    score: Union[int,str]
+    score: float
     strand: str
+
+    # define a post-init method to coerce ints and floats properly
+    def __post_init__(self):
+        chromStart = int(chromStart)
+        chromEnd = int(chromEnd)
+        score = float(score)
 
     # define a custom printout representation for the Bed6
     def __repr__(self):

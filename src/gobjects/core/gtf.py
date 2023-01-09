@@ -60,13 +60,16 @@ class GTF:
     feature: str 
     chromStart: int # 1-indexed, beware interfacing with BED objects
     chromEnd: int # 1-indexed, inclusive, beware interfacing with BED objects
-    score: int  # 0-1000 
+    score: float  # 0-1000 
     strand: str  # '+', '-', or '.'
     frame: Union[str,int]  # 0-2 or '.'
     attributes: str  # raw string repr of the attributes, converted below
     
     # define post_init routines to create attribute dictionary
     def __post_init__(self): # TODO
+        chromStart = int(chromStart)
+        chromEnd = int(chromEnd)
+        score = float(score)
         self.attr_dict = {}
         pre_proc_attr = self.attributes.split("; ")
         for pair in pre_proc_attr:
