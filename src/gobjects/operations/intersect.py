@@ -7,7 +7,7 @@
 # module imports
 # ----------------------------------------------------------------------------
 from ..core.intervals import Interval
-from ..core.bed import Bed6, BED12
+from ..core.bed import Bed6, Bed12
 from ..core.gtf import GTF
 
 # function definitions
