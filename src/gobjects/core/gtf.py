@@ -69,7 +69,7 @@ class GTF:
     def __post_init__(self): # TODO
         self.chromStart = int(self.chromStart)
         self.chromEnd = int(self.chromEnd)
-        self.score = check_and_convert_nums(self.score)
+        self.score = check_and_convert_nums(str(self.score))
         self.attr_dict = {}
         pre_proc_attr = self.attributes.split("; ")
         for pair in pre_proc_attr:
