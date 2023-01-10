@@ -11,6 +11,18 @@ from .intervals import Interval
 from dataclasses import dataclass
 from typing import Union
 
+# function definitions
+# ----------------------------------------------------------------------------
+
+# function check_and_convert_nums() takes a string and converts it to 
+# a floating point python number if it looks like an integer or float,
+# otherwise, it returns the string back unchanged
+def check_and_convert_nums(string):
+    pattern = "^[+-]?((\d+(\.\d+)?)|(\.\d+))$"
+    mth = match(pattern, string)
+    return (float(mth.string) if mth is not None else string)
+
+
 # class definitions
 # ----------------------------------------------------------------------------
 
@@ -30,7 +42,7 @@ class Bed6(Interval):
     def __post_init__(self):
         self.chromStart = int(self.chromStart)
         self.chromEnd = int(self.chromEnd)
-        self.score = float(self.score)
+        self.score = check_and_convert_nums(self.score)
 
     # define a custom printout representation for the Bed6
     def __repr__(self):
