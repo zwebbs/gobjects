@@ -10,6 +10,7 @@
 from .intervals import Interval
 from dataclasses import dataclass
 from typing import Union
+from re import match
 
 # function definitions
 # ----------------------------------------------------------------------------
