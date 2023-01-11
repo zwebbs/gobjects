@@ -122,8 +122,8 @@ class Bedpe:
     # if the minimum interval is identical, we compare the other interval from each 
     # This comparison only works for Bedpe to Bedpe objects.
     def __lt__(self, other):
-        if lt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return True
-        elif gt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return False
+        if lt(*[prep_chrom_comp(c) for c in [self.first_bed.chrom, other.first_bed.chrom]]): return True
+        elif gt(*[prep_chrom_comp(c) for c in [self.first_bed.chrom, other.first_bed.chrom]]): return False
         else: # if the chromosomes names are equal by natural sort
             comp = ((self.first_bed < other.first_bed) or 
                     ((self.first_bed == other.first_bed) and 
@@ -135,8 +135,8 @@ class Bedpe:
     # compared to the minimum of the two paired intervals of the other object. 
     # This comparison only works for Bedpe to Bedpe objects.
     def __gt__(self, other):
-        if lt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return False
-        elif gt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return True
+        if lt(*[prep_chrom_comp(c) for c in [self.first_bed.chrom, other.first_bed.chrom]]): return False
+        elif gt(*[prep_chrom_comp(c) for c in [self.first_bed.chrom, other.first_bed.chrom]]): return True
         else: # if the chromosomes names are equal by natural sort
             comp = ((self.first_bed > other.first_bed) or 
                     ((self.first_bed == other.first_bed) and 
