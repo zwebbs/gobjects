@@ -84,14 +84,22 @@ class Bedpe:
             self.chrom2, self.chromStart2, self.chromEnd2,
             self.name, self.score, self.strand2
         )
+
+        # precompute first and second bed intervals in sort order to lessen
+        # comparison burden in intersection and sorting operations
+        self.first_bed = min([self.bed1,self.bed2])
+        self.second_bed = max([self.bed1, self.bed2])
+
+        # handle attributes field
         self.attr_dict = {}
         pre_proc_attr = self.attributes.split("; ")
-        for pair in pre_proc_attr:
-            k,v = [p.strip('"') for p in pair.strip(";").split()]
-            if k not in self.attr_dict.keys():
-                self.attr_dict[k] = [check_and_convert_nums(v)]
-            else:
-                self.attr_dict[k].append(check_and_convert_nums(v))
+        if pre_proc_attr != ['']:
+            for pair in pre_proc_attr:
+                k,v = [p.strip('"') for p in pair.strip(";").split()]
+                if k not in self.attr_dict.keys():
+                    self.attr_dict[k] = [check_and_convert_nums(v)]
+                else:
+                    self.attr_dict[k].append(check_and_convert_nums(v))
 
     # define custom representation when printing the Bedpe object
     def __repr__(self):
@@ -114,12 +122,12 @@ class Bedpe:
     # if the minimum interval is identical, we compare the other interval from each 
     # This comparison only works for Bedpe to Bedpe objects.
     def __lt__(self, other):
-        if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
-        elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
+        if lt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return True
+        elif gt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return False
         else: # if the chromosomes names are equal by natural sort
-            comp = ((min([self.bed1, self.bed2]) < min([other.bed1, other.bed2])) or 
-                    ((min([self.bed1, self.bed2]) == min([other.bed1, other.bed2])) and 
-                    (max([self.bed1, self.bed2]) < max([other.bed1, other.bed2]))))
+            comp = ((self.first_bed < other.first_bed) or 
+                    ((self.first_bed == other.first_bed) and 
+                    (self.second_bed < other.second_bed)))
             return comp
 
     # define a custom function for the (>) comparator. For Bedpe objects,
@@ -127,12 +135,12 @@ class Bedpe:
     # compared to the minimum of the two paired intervals of the other object. 
     # This comparison only works for Bedpe to Bedpe objects.
     def __gt__(self, other):
-        if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
-        elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
+        if lt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return False
+        elif gt(*[prep_chrom_comp(c) for c in [self.first_bed, other.first_bed]]): return True
         else: # if the chromosomes names are equal by natural sort
-            comp = ((min([self.bed1, self.bed2]) > min([other.bed1, other.bed2])) or 
-                    ((min([self.bed1, self.bed2]) == min([other.bed1, other.bed2])) and 
-                    (max([self.bed1, self.bed2]) > max([other.bed1, other.bed2]))))
+            comp = ((self.first_bed > other.first_bed) or 
+                    ((self.first_bed == other.first_bed) and 
+                    (self.second_bed > other.second_bed)))
             return comp
 
     # define a custom function for the (<=) comparator. See __lt__ , __gt__ ,
@@ -142,39 +150,5 @@ class Bedpe:
 
     # define a custom function for the (>=) comparator. See __lt__ , __gt__ ,
     # and __eq__ as implemented above for specifics
-    def __ge__(self,other):
-        return (self.__gt__(other) or self.__eq__(other))
-
-
-
-
-
-    # define a custom function for the less than (<) comparator
-    # based on interval algebra on matching chromosomes
-    def __lt__(self, other):
-        if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
-        elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
-        else: # if the chromosomes names are equal by natural sort
-            comp = ((self.chromEnd < other.chromStart) or
-                    ((self.chromStart == other.chromStart) and
-                    (self.chromEnd < other.chromEnd)))
-            return comp
-    
-    # define a custom function for the greater than (>) comparator
-    # based on interval algebra on matching chromosomes
-    def __gt__(self, other):
-        if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
-        elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
-        else: # if the chromosomes names are equal by natural sort
-            comp = (self.chromStart > other.chromStart)
-            return comp
-    
-    # define a custom function for the less than or equal to (<=) comparator
-    # based on niterval algebra on matching chromosomes
-    def __le__(self,other):
-        return (self.__lt__(other) or self.__eq__(other))
-    
-    # define a custom function for the greater than or equal to (>=) comparator
-    # based on interval algebra on matching chromosomes
     def __ge__(self,other):
         return (self.__gt__(other) or self.__eq__(other))
