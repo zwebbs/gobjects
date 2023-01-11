@@ -84,8 +84,8 @@ class Interval():
         elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
         else: # if the chromosomes names are equal by natural sort
             comp = ((self.chromStart > other.chromStart) or 
-                    ((self.chromStart == other.chromStart) and
-                    (self.chromEnd > other.chromEnd)))
+                    ((self.chromEnd == other.chromEnd) and
+                    (self.chromStart > other.chromStart)))
             return comp
     
     # define a custom function for the less than or equal to (<=) comparator

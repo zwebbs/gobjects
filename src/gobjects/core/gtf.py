@@ -35,7 +35,7 @@ def check_and_convert_nums(string):
 # class definitions
 # ----------------------------------------------------------------------------
 
-# class Interval() - base class for all GTF-type gene-like objects. 
+# class GTF() - base class for all GTF-type gene-like objects. 
 # * indexing of genomic intervals follow GTF conventions. This means that
 #   chromosome scaffolds begin at base 1. (This differs from bed-syle so care
 #   must be taken when intersecting the two object types) the end of the interval
@@ -51,7 +51,7 @@ def check_and_convert_nums(string):
 #     6. score - A score between 0 and 1000, can be used for filtering or visual cues
 #     7. strand - strand options include "+", "-", or "." (for don't know/don't care)
 #     8. frame - for exons and similar, frame should be a number between 0-2
-#     9. attribute -  raw string representing attribute list. converted and stored in 
+#     9. attributes -  raw string representing attribute list. converted and stored in 
 #           attr_dict for convenience of use and filtering.
 @dataclass
 class GTF:
@@ -102,7 +102,7 @@ class GTF:
         if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
         elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
         else: # if the chromosomes names are equal by natural sort
-            comp = ((self.chromEnd < other.chromStart) or
+            comp = ((self.chromStart < other.chromStart) or
                     ((self.chromStart == other.chromStart) and
                     (self.chromEnd < other.chromEnd)))
             return comp
@@ -113,7 +113,9 @@ class GTF:
         if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
         elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
         else: # if the chromosomes names are equal by natural sort
-            comp = (self.chromStart > other.chromStart)
+            comp = ((self.chromStart > other.chromStart) or 
+                    ((self.chromEnd == other.chromEnd) and
+                    (self.chromStart > other.chromStart)))
             return comp
     
     # define a custom function for the less than or equal to (<=) comparator
