@@ -70,14 +70,17 @@ class GTF:
         self.chromStart = int(self.chromStart)
         self.chromEnd = int(self.chromEnd)
         self.score = check_and_convert_nums(str(self.score))
+        
+        # handle attributes field
         self.attr_dict = {}
         pre_proc_attr = self.attributes.split("; ")
-        for pair in pre_proc_attr:
-            k,v = [p.strip('"') for p in pair.strip(";").split()]
-            if k not in self.attr_dict.keys():
-                self.attr_dict[k] = [check_and_convert_nums(v)]
-            else:
-                self.attr_dict[k].append(check_and_convert_nums(v))
+        if pre_proc_attr != ['']:
+            for pair in pre_proc_attr:
+                k,v = [p.strip('"') for p in pair.strip(";").split()]
+                if k not in self.attr_dict.keys():
+                    self.attr_dict[k] = [check_and_convert_nums(v)]
+                else:
+                    self.attr_dict[k].append(check_and_convert_nums(v))
 
     # define custom representation when printing the GTF object
     def __repr__(self):
