@@ -6,8 +6,16 @@
 
 # module imports
 # ----------------------------------------------------------------------------
+from ..core.bed import Bed6, Bed12
+from ..core.bedpe import Bedpe
+from ..core.gtf import Gtf
 from ..core.intervals import Interval
-from ..core.gtf import GTF
+
+# constants definitions
+# ----------------------------------------------------------------------------
+CONTIGUOUS = [Interval, Bed6, Bed12, Gtf]
+NON_CONTIGUOUS = [Bedpe]
+ALL_GOBJECTS = CONTIGUOUS + NON_CONTIGUOUS
 
 # function definitions
 # ----------------------------------------------------------------------------
@@ -25,42 +33,23 @@ def check_stranded(gobj):
     else:
         return None
 
-# define intersect_BEDtoBED() which takes two BED-interval-like objects
+# define intersect_contiguous() which takes two contiguous features, like Bed or GTF
 # and returns the boolean result of the interval intersect. the function
 # has a strand-aware option but is not checked internally for strand attrs
-def intersect_BEDtoBED(gobjA, gobjB, strand_aware=False):
+def intersect_contiguous(gobjA, gobjB, strand_aware=False):
     if strand_aware and (gobjA.strand != gobjB.strand): return False
     else:  # regular intersect routine
-        if gobjA.chrom != gobjB.chrom: return True
+        if gobjA.chrom != gobjB.chrom: return False
         else:
             return not (  # define NOT intersection conditions
-                (gobjB.chromEnd <= gobjA.chromStart) or 
-                (gobjB.chromStart >= gobjA.chromEnd))
+                ((gobjA.zero_idx_end) < gobjB.zero_idx_start) or
+                 (gobjA.zero_idx_start > (gobjB.zero_idx_end)))
 
-# define intersect_GTFtoGTF() which takes two GTF-like objects
-# and returns the boolean result of the interval intersect. the funciton has a 
-# strand-aware option but is not checked internally for strand attrs
-def intersect_GTFtoGTF(gobjA, gobjB, strand_aware=False):
-    if strand_aware and (gobjA.strand != gobjB.strand): return False
-    else :
-        if gobjA.chrom != gobjB.chrom: return True
-        else:
-            return not (  # define NOT intersection conditions
-                (gobjB.chromEnd < gobjA.chromStart) or 
-                (gobjB.chromStart > gobjA.chromEnd)) # gtfs are right inclusive
-
-# define intersect_BEDtoGTF() which takes an BED6/Interval-like object as its first
-# argument and a GTF-like object as its second argument and returns the boolean 
-# result of the interval intersect. the function has a strand aware option but is
-# not checked internally for strand attrs:
-def intersect_BEDtoGTF(gobjA, gobjB, strand_aware=False):
-    if strand_aware and (gobjA.strand != gobjB.strand): return False
-    else:
-        if gobjA.chrom != gobjB.chrom: return True
-        else:
-            return not (  # define NOT intersection conditions
-                (gobjB.chromEnd < gobjA.chromStart) or
-                (gobjB.chromStart >= gobjA.chromEnd)) # take care of uneven boundary inclusion
+# define intersect_noncontiguous() which takes two non-contiguous features, like Bedpe
+# and returns the boolean result of the interval intersect. the function
+# has a strand-aware option but is not checked internally for strand attrs
+def intersect_noncontiguous(gobjA, gobjB, strand_aware=False):
+    pass
 
 # define intersect() which takes two objects and returns the boolean result of 
 # interval intersect. this function wraps several subroutines which handle the various
@@ -70,17 +59,15 @@ def intersect(a_obj, b_obj, strand_aware=False):
         check_stranded(a_obj) 
         check_stranded(b_obj)
 
-    # handle comparisons between different object types
-    if (isinstance(a_obj,Interval)) and (isinstance(b_obj,Interval)):
-        return intersect_BEDtoBED(a_obj, b_obj, strand_aware)
-    elif (isinstance(a_obj,GTF)) and (isinstance(b_obj,GTF)):
-        return intersect_GTFtoGTF(a_obj, b_obj, strand_aware)
-    elif (isinstance(a_obj,Interval)) and (isinstance(b_obj,GTF)):
-        return intersect_BEDtoGTF(a_obj, b_obj, strand_aware)
-    elif (isinstance(a_obj,GTF)) and (isinstance(b_obj, Interval)):
-        return intersect_BEDtoGTF(b_obj, a_obj, strand_aware) # switch a and b for gtf to bed 
+    # handle comparisons between contiguous objects:
+    if all((type(a_obj) in CONTIGUOUS, type(b_obj) in CONTIGUOUS)):
+        return intersect_contiguous(a_obj, b_obj, strand_aware) 
+    # handle noncontiguous to noncontiguous
+    elif all((type(a_obj) in NON_CONTIGUOUS, type(b_obj) in NON_CONTIGUOUS)):
+        return intersect_noncontiguous(a_obj, b_obj, strand_aware)
     else:
         raise TypeError(
             "Could not Infer the types for intersect objects "
-            f"{a_obj} and/or {b_obj}"
+            f"{a_obj} and/or {b_obj}. please ensure their type is in {ALL_GOBJECTS}"
         )
+

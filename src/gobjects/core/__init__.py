@@ -5,6 +5,7 @@
 
 # module imports
 # ----------------------------------------------------------------------------
-from .intervals import Interval
 from .bed import Bed6, Bed12
-from .gtf import GTF
+from .bedpe import Bedpe
+from .gtf import Gtf
+from .intervals import Interval

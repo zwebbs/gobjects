@@ -35,14 +35,14 @@ def check_and_convert_nums(string):
 # class definitions
 # ----------------------------------------------------------------------------
 
-# class GTF() - base class for all GTF-type gene-like objects. 
+# class Gtf() - base class for all GTF-type gene-like objects. 
 # * indexing of genomic intervals follow GTF conventions. This means that
 #   chromosome scaffolds begin at base 1. (This differs from bed-syle so care
 #   must be taken when intersecting the two object types) the end of the interval
 #   is inclusive [chromStart, chromEnd], creating slightly different intersection
 #   rules than bed-style objects. 
 #
-# * The GTF class contains nine attributes: 
+# * The Gtf class contains nine attributes: 
 #     1. chrom - chromosome of the feature
 #     2. source - The program that generated this feature
 #     3. feature - The name of the type of feature e.g. (exon, transcript, CDS, etc. )
@@ -54,7 +54,7 @@ def check_and_convert_nums(string):
 #     9. attributes -  raw string representing attribute list. converted and stored in 
 #           attr_dict for convenience of use and filtering.
 @dataclass
-class GTF:
+class Gtf:
     chrom: str
     source: str  # e.g. HAVANA, ncbi, etc
     feature: str 
@@ -70,7 +70,9 @@ class GTF:
         self.chromStart = int(self.chromStart)
         self.chromEnd = int(self.chromEnd)
         self.score = check_and_convert_nums(str(self.score))
-        
+        self.zero_idx_start = self.chromStart - 1  # always inclusive
+        self.zero_idx_end = self.chromEnd - 1  #always inclusive
+
         # handle attributes field
         self.attr_dict = {}
         pre_proc_attr = self.attributes.split("; ")
@@ -89,7 +91,7 @@ class GTF:
             f" {self.chromStart} {self.chromEnd} {self.score}"
             f" {self.strand} {self.frame} {self.attributes} "
         )
-        return repr(f"GTF({spec})")
+        return repr(f"Gtf({spec})")
 
         # define a custom function for the equal to (==) comparator
     # based on identical interval information on matching coordinates
