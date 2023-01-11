@@ -39,7 +39,7 @@ def prep_chrom_comp(chrom: str):
 #     2. chromosome start position (chromEnd) -required-
 #     3. chromosome end position (chromEnd) -required- 
 #     4. feature name (name) -required-
-@dataclass
+@dataclass(eq=False, order=False)
 class Interval():
     chrom: str
     chromStart: int
@@ -67,10 +67,12 @@ class Interval():
     # define a custom function for the less than (<) comparator
     # based on interval algebra on matching chromosomes
     def __lt__(self, other):
+        print("testing chroms")
         if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
         elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
         else: # if the chromosomes names are equal by natural sort
-            comp = ((self.chromEnd < other.chromStart) or
+            print("comparing")
+            comp = ((self.chromStart < other.chromStart) or
                     ((self.chromStart == other.chromStart) and
                     (self.chromEnd < other.chromEnd)))
             return comp
@@ -81,7 +83,9 @@ class Interval():
         if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
         elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
         else: # if the chromosomes names are equal by natural sort
-            comp = (self.chromStart > other.chromStart)
+            comp = ((self.chromStart > other.chromStart) or 
+                    ((self.chromStart == other.chromStart) and
+                    (self.chromEnd > other.chromEnd)))
             return comp
     
     # define a custom function for the less than or equal to (<=) comparator
@@ -94,11 +98,3 @@ class Interval():
     def __ge__(self,other):
         return (self.__gt__(other) or self.__eq__(other))
     
-    # define a custom function to determine whether the interval intersects
-    # another interval. intervals on separate chromosomes do not intersect
-    def __intersect__(self,other):
-        if self.chrom != other.chrom: return True
-        else:
-            return not (  # define intersection conditions
-                (other.chromEnd < self.chromStart) or 
-                (other.chromStart >= self.chromEnd)) 

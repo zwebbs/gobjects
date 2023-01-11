@@ -34,7 +34,7 @@ def check_and_convert_nums(string):
 # * the class adds two attributes to the Interval base class:
 #    1. interval score (score); typically 1-1000 -required, missing denoted by '.'-
 #    2. feature strandness (strand) -required, missingness denoted by '.'-
-@dataclass
+@dataclass(eq=False, order=False)
 class Bed6(Interval):
     score: float
     strand: str
@@ -65,7 +65,7 @@ class Bed6(Interval):
 #    4. blockCount- The number of blocks (e.g. exons) in the BED line.
 #    5. blockSizes- A comma-separated string of the block sizes.
 #    6. blockStarts- A comma-separated string of block starts. positions should be relative to chromStart
-@dataclass
+@dataclass(eq=False, order=False)
 class Bed12(Bed6):
     thickStart: int
     thickEnd: int
