@@ -67,11 +67,9 @@ class Interval():
     # define a custom function for the less than (<) comparator
     # based on interval algebra on matching chromosomes
     def __lt__(self, other):
-        print("testing chroms")
         if lt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return True
         elif gt(*[prep_chrom_comp(c) for c in [self.chrom, other.chrom]]): return False
         else: # if the chromosomes names are equal by natural sort
-            print("comparing")
             comp = ((self.chromStart < other.chromStart) or
                     ((self.chromStart == other.chromStart) and
                     (self.chromEnd < other.chromEnd)))
