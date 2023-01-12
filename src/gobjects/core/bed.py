@@ -43,6 +43,8 @@ class Bed6(Interval):
     def __post_init__(self):
         self.chromStart = int(self.chromStart)
         self.chromEnd = int(self.chromEnd)
+        self.zero_idx_start = self.chromStart  # always inclusive
+        self.zero_idx_end = self.chromEnd - 1  # always inclusive
         self.score = check_and_convert_nums(str(self.score))
 
     # define a custom printout representation for the Bed6
