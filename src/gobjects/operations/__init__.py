@@ -6,3 +6,4 @@
 # module imports
 # ----------------------------------------------------------------------------
 from .intersect import intersect
+from .writers import write_Bed6
