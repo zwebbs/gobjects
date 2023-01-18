@@ -10,10 +10,12 @@ from ..core.bed import Bed6, Bed12
 from ..core.bedpe import Bedpe
 from ..core.gtf import Gtf
 from ..core.intervals import Interval
+from ..core.intervalmap import IntervalNode, IntervalMap
+
 
 # constants definitions
 # ----------------------------------------------------------------------------
-CONTIGUOUS = [Interval, Bed6, Bed12, Gtf]
+CONTIGUOUS = [Interval, Bed6, Bed12, Gtf, IntervalNode]
 NON_CONTIGUOUS = [Bedpe]
 ALL_GOBJECTS = CONTIGUOUS + NON_CONTIGUOUS
 
@@ -40,7 +42,7 @@ def intersect(gobjA, gobjB, strand_aware=False):
     if not all((type(gobjA) in CONTIGUOUS, type(gobjB) in CONTIGUOUS)):
         raise TypeError(
             "Cannot perform intersect() on non-contiguous features.\n"
-            f"please ensure {gobjB} and/or {gobjB}. are in {CONTIGUOUS}"
+            f"please ensure {gobjB} and/or {gobjB}. are one of {CONTIGUOUS}"
         )
     
     if strand_aware:  # check for strand information on strand aware items
@@ -56,4 +58,21 @@ def intersect(gobjA, gobjB, strand_aware=False):
                  (gobjA.zero_idx_start > (gobjB.zero_idx_end)))
 
 
-
+# define function intersect_IntervalMap() which takes a query record
+# and an IntervalMap and returns all of the records in the map
+# which intersect the given query record.
+def intersect_IntervalMap(query, interval_map):
+    if not (type(query) in CONTIGUOUS):
+        raise TypeError(
+            "Cannot perform intersect() on non-contiguous features.\n"
+            f"please ensure {query}. is one of {CONTIGUOUS}"
+        )
+    out_intersects = []  # output list of intersects
+    bins = interval_map.get_map()[query.chrom]
+    bin_intersects = [b for b in bins if intersect(query, b)]
+    for b in bin_intersects:
+        for rec in b.intervals:
+            if intersect(query, rec): out_intersects.append(rec)
+            elif rec > query: break
+            else: continue
+    return out_intersects

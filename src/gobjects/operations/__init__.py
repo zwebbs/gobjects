@@ -5,5 +5,5 @@
 
 # module imports
 # ----------------------------------------------------------------------------
-from .intersect import intersect
+from .intersect import intersect, intersect_IntervalMap
 from .writers import write_Bed6

@@ -9,3 +9,4 @@ from .bed import Bed6, Bed12
 from .bedpe import Bedpe
 from .gtf import Gtf
 from .intervals import Interval
+from .intervalmap import IntervalMap
