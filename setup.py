@@ -11,7 +11,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="gobjects",
-    version="0.0.5",
+    version="0.0.6",
     author="Zach Weber",
     author_email="zach.weber.813@gmail.com",
     description="Python3 genetics objects",
