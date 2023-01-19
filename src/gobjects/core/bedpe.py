@@ -76,6 +76,11 @@ class Bedpe:
     # define post_init routines to create internal Bed6 objects for each
     # interval as well as an attribute dictionary shared between the two
     def __post_init__(self): # TODO
+        self.chromStart1 = int(self.chromStart1)
+        self.chromEnd1 = int(self.chromEnd1)
+        self.chromStart2 = int(self.chromStart1)
+        self.chromEnd2 = int(self.chromEnd2)
+        self.score = check_and_convert_nums(str(self.score))
         self.bed1 = Bed6(
             self.chrom1, self.chromStart1, self.chromEnd1,
             self.name, self.score, self.strand1
